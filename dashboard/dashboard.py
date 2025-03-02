@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # Load data
 # @st.cache_data
-hour_data = pd.read_csv("main_data.csv")
+hour_data = pd.read_csv("https://raw.githubusercontent.com/ayalya/Submis/refs/heads/main/dashboard/main_data.csv")
 # hour_data = hour_data.drop(columns=['Unnamed: 0', "z_score", 'anomaly', 'instant'])
 
 # =================== Sidebar ====================
