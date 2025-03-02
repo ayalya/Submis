@@ -14,7 +14,6 @@ hour_data['dteday'] = pd.to_datetime(hour_data['dteday'], format="%Y-%m-%d")
 =======
 hour_data = pd.read_csv("https://raw.githubusercontent.com/ayalya/Submis/refs/heads/main/dashboard/main_data.csv")
 # hour_data = hour_data.drop(columns=['Unnamed: 0', "z_score", 'anomaly', 'instant'])
->>>>>>> 545a1a2dd740524bd321fe850a573bed85954c12
 
 # =================== Sidebar ====================
 st.sidebar.title("Dashboard Bike Sharing")
