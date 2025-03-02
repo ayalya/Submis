@@ -224,7 +224,7 @@ elif menu == "Outlier Analysis":
         ax.set_xlabel('Tanggal')
         ax.set_ylabel('Jumlah Peminjaman')
         ax.legend()
-        ax.grid(True)
+        #ax.grid(True)
         st.pyplot(fig)
         # ax.show()
     
