@@ -6,8 +6,10 @@ import matplotlib.pyplot as plt
 
 # Load data
 # @st.cache_data
-hour_data = pd.read_csv("main_data.csv")
-# hour_data = hour_data.drop(columns=['Unnamed: 0', "z_score", 'anomaly', 'instant'])
+hour_data = pd.read_csv(
+    "https://raw.githubusercontent.com/ayalya/Submis/refs/heads/main/dashboard/main_data.csv"
+)
+hour_data['dteday'] = pd.to_datetime(hour_data['dteday'], format="%Y-%m-%d")
 
 # =================== Sidebar ====================
 st.sidebar.title("Dashboard Bike Sharing")
@@ -21,7 +23,7 @@ menu = st.sidebar.selectbox(
         "Tren Peminjaman",
         "Hari Libur vs Hari Kerja",
         "Pengaruh Cuaca",
-        "Outlier Analysis dan Kesimpulan",
+        "Outlier Analysis",
     ],
 )
 
@@ -106,7 +108,7 @@ elif menu == "Tren Peminjaman":
     with content.container():
         st.title("📈 Tren Peminjaman Sepeda Per Jam")
 
-        st.subheader('Stacked Bar Chart Peminjaman Sepeda per Jam pada Setiap Hari')
+        st.subheader("Stacked Bar Chart Peminjaman Sepeda per Jam pada Setiap Hari")
         # Plot Line Chart
         fig, ax = plt.subplots(figsize=(12, 6))
         data_grouped = hour_data.groupby("hr")[["casual", "registered"]].sum()
@@ -122,41 +124,62 @@ elif menu == "Tren Peminjaman":
 # ============== Perbandingan Hari Libur vs Hari Kerja =============
 elif menu == "Hari Libur vs Hari Kerja":
     with content.container():
-        st.title(
-            "📊 Perbandingan Pengguna di Hari Libur dan Hari Kerja"
-        )
+        st.title("📊 Perbandingan Pengguna di Hari Libur dan Hari Kerja")
 
         st.subheader("Pola Peminjaman Sepeda pada Hari Libur dan Hari Kerja")
         g = sns.FacetGrid(hour_data, col="workingday", height=5, aspect=1.5)
         color = sns.color_palette("mako")
         # Membuat plot dengan seaborn
-        g = sns.FacetGrid(hour_data, col='workingday', height=5, aspect=1.5)
-        g.map_dataframe(sns.lineplot, x='hr', y='casual', label='Casual', ci=None, color='purple')
-        g.map_dataframe(sns.lineplot, x='hr', y='registered', label='Registered', ci=None, color='green')
+        g = sns.FacetGrid(hour_data, col="workingday", height=5, aspect=1.5)
+        g.map_dataframe(
+            sns.lineplot, x="hr", y="casual", label="Casual", ci=None, color="purple"
+        )
+        g.map_dataframe(
+            sns.lineplot,
+            x="hr",
+            y="registered",
+            label="Registered",
+            ci=None,
+            color="green",
+        )
 
         # Judul dan Label
-        g.set_axis_labels('Jam', 'Jumlah Peminjaman Sepeda')
+        g.set_axis_labels("Jam", "Jumlah Peminjaman Sepeda")
         g.set_titles(col_template="Workingday: {col_name}")
 
         for ax in g.axes.flat:
-            ax.set_xticks(hour_data['hr'].unique())
-            ax.grid(True, linestyle="--", alpha=0.6) 
-            ax.legend(title="User Type", labels=['Casual', 'Registered'], loc='upper right')
+            ax.set_xticks(hour_data["hr"].unique())
+            ax.grid(True, linestyle="--", alpha=0.6)
+            ax.legend(
+                title="User Type", labels=["Casual", "Registered"], loc="upper right"
+            )
 
         # Menampilkan di Streamlit
         st.pyplot(g.figure)
 
         # Melebur (melt) data agar casual dan registered bisa tampil dalam satu boxplot
-        hour_data_melted = hour_data.melt(id_vars=['workingday'], value_vars=['casual', 'registered'], var_name='User Type', value_name='Count')
+        hour_data_melted = hour_data.melt(
+            id_vars=["workingday"],
+            value_vars=["casual", "registered"],
+            var_name="User Type",
+            value_name="Count",
+        )
 
         # Membuat figure dan axis
-        st.subheader('Distribusi Peminjaman Sepeda pada Hari Kerja dan Libur')
+        st.subheader("Distribusi Peminjaman Sepeda pada Hari Kerja dan Libur")
         fig, ax = plt.subplots(figsize=(10, 5))
-        sns.boxplot(data=hour_data_melted, x='workingday', y='Count', hue='User Type', palette="mako", ax=ax)
+        sns.boxplot(
+            data=hour_data_melted,
+            x="workingday",
+            y="Count",
+            hue="User Type",
+            palette="mako",
+            ax=ax,
+        )
         # ax.set_title('Sebaran Peminjaman Sepeda pada Hari Kerja dan Libur', fontsize=14)
-        ax.set_xticklabels(['Libur (0)', 'Hari Kerja (1)']) 
-        ax.set_xlabel('Working Day', fontsize=12)
-        ax.set_ylabel('Jumlah Peminjaman', fontsize=12)
+        ax.set_xticklabels(["Libur (0)", "Hari Kerja (1)"])
+        ax.set_xlabel("Working Day", fontsize=12)
+        ax.set_ylabel("Jumlah Peminjaman", fontsize=12)
         plt.grid(True)
         st.pyplot(fig)
 
@@ -167,67 +190,135 @@ elif menu == "Pengaruh Cuaca":
         st.title("🌩️🌤️ Pengaruh Cuaca terhadap Peminjaman Sepeda ⛈️☀️")
 
         # Boxplot cuaca
-        st.subheader('Persebaran Peminjaman Sepeda Musiman')
-        fig,ax = plt.subplots(figsize=(10,6))
-        sns.lineplot(data=hour_data, x='hr', y='cnt', hue='season', ax=ax, color='dark', ci=None)
-        ax.set_xticks(hour_data['hr'].unique())
+        st.subheader("Persebaran Peminjaman Sepeda Musiman")
+        fig, ax = plt.subplots(figsize=(10, 6))
+        sns.lineplot(
+            data=hour_data, x="hr", y="cnt", hue="season", ax=ax, color="dark", ci=None
+        )
+        ax.set_xticks(hour_data["hr"].unique())
         plt.grid(True)
         # ax.set(title='Persebaran Peminjaman Sepeda Musiman')
-        ax.set_xlabel('Hour')
-        ax.set_ylabel('Count')
+        ax.set_xlabel("Hour")
+        ax.set_ylabel("Count")
         st.pyplot(fig)
 
         # ==========BOXPLOT==============
-        st.subheader('Distribusi Peminjaman Berdasarkan Musim')
-        hour_data_melted = hour_data.melt(id_vars=['season'], value_vars=['casual', 'registered'], var_name='User Type', value_name='Count')
+        st.subheader("Distribusi Peminjaman Berdasarkan Musim")
+        hour_data_melted = hour_data.melt(
+            id_vars=["season"],
+            value_vars=["casual", "registered"],
+            var_name="User Type",
+            value_name="Count",
+        )
 
         fig, ax = plt.subplots(figsize=(10, 5))
         # Boxplot dengan hue berdasarkan kategori casual & registered
-        sns.boxplot(data=hour_data_melted, x='season', y='Count', hue='User Type', 
-                    palette="muted", ax=ax)
+        sns.boxplot(
+            data=hour_data_melted,
+            x="season",
+            y="Count",
+            hue="User Type",
+            palette="muted",
+            ax=ax,
+        )
 
         # ax.set(title='Distribusi Peminjaman Berdasarkan Musim', xlabel='Musim', ylabel='Jumlah Peminjaman')
         ax.grid(True)
-        ax.legend(title='Tipe Pengguna')
+        ax.legend(title="Tipe Pengguna")
         st.pyplot(fig)
 
         # ===================== COR MATRIX =================
-        st.subheader('Distribusi Peminjaman Berdasarkan Musim')
-        corr_Season = hour_data[['temp', 'atemp', 'hum', 'windspeed', 'season', 'casual','registered', 'cnt']].corr()
+        st.subheader("Distribusi Peminjaman Berdasarkan Musim")
+        corr_Season = hour_data[
+            [
+                "temp",
+                "atemp",
+                "hum",
+                "windspeed",
+                "season",
+                "casual",
+                "registered",
+                "cnt",
+            ]
+        ].corr()
 
         # Plot heatmap
         fig, ax = plt.subplots(figsize=(8, 6))  # Buat figure untuk Streamlit
-        sns.heatmap(corr_Season, square=True, annot=False, cmap='Blues', ax=ax)
+        sns.heatmap(corr_Season, square=True, annot=False, cmap="Blues", ax=ax)
 
         # Tampilkan di Streamlit
         st.pyplot(fig)
 
 # ============== Handling Outlier =============
-elif menu == "Outlier Analysis dan Kesimpulan":
+elif menu == "Outlier Analysis":
     with content.container():
         st.title("📈 Time Series Data Anomali")
         fig, ax = plt.subplots(figsize=(12, 6))
 
-        hour_data['z_score'] = (hour_data['cnt'] - hour_data['cnt'].mean()) / hour_data['cnt'].std()
+        hour_data["z_score"] = (hour_data["cnt"] - hour_data["cnt"].mean()) / hour_data[
+            "cnt"
+        ].std()
 
         # Menentukan threshold anomali (Z-Score > 3 atau < -3)
         threshold = 3
-        hour_data['anomaly'] = hour_data['z_score'].abs() > threshold
+        hour_data["anomaly"] = hour_data["z_score"].abs() > threshold
 
-        sns.lineplot(data=hour_data, x='dteday', y='cnt', label='Jumlah Peminjaman', alpha=0.6, ci=None)
-        sns.lineplot(data=hour_data, x='dteday', y='registered', label='Registered', alpha=0.6, ci=None)
-        sns.lineplot(data=hour_data, x='dteday', y='casual', label='Casual', alpha=0.6, ci=None)
-        sns.scatterplot(data=hour_data[hour_data['anomaly']], x='dteday', y='cnt', color='red', label='Anomali Count', s=50)
-        sns.scatterplot(data=hour_data[hour_data['anomaly']], x='dteday', y='registered', color='Orange', label='Anomali Registered', s=50)
-        sns.scatterplot(data=hour_data[hour_data['anomaly']], x='dteday', y='casual', color='Green', label='Anomali Casual', s=50)
+        sns.lineplot(
+            data=hour_data,
+            x="dteday",
+            y="cnt",
+            label="Jumlah Peminjaman",
+            alpha=0.6,
+            ci=None,
+        )
+        sns.lineplot(
+            data=hour_data,
+            x="dteday",
+            y="registered",
+            label="Registered",
+            alpha=0.6,
+            ci=None,
+        )
+        sns.lineplot(
+            data=hour_data, x="dteday", y="casual", label="Casual", alpha=0.6, ci=None
+        )
+        sns.scatterplot(
+            data=hour_data[hour_data["anomaly"]],
+            x="dteday",
+            y="cnt",
+            color="red",
+            label="Anomali Count",
+            s=50,
+        )
+        sns.scatterplot(
+            data=hour_data[hour_data["anomaly"]],
+            x="dteday",
+            y="registered",
+            color="Orange",
+            label="Anomali Registered",
+            s=50,
+        )
+        sns.scatterplot(
+            data=hour_data[hour_data["anomaly"]],
+            x="dteday",
+            y="casual",
+            color="Green",
+            label="Anomali Casual",
+            s=50,
+        )
         # plt.title('Tren Peminjaman Sepeda dan Anomali')
-        ax.set_xlabel('Tanggal')
-        ax.set_ylabel('Jumlah Peminjaman')
+        xticks = hour_data["dteday"].dt.to_period("M").drop_duplicates().dt.start_time
+        ax.set_xticks(xticks)
+        ax.set_xticklabels(
+            xticks.dt.strftime("%b %Y"), rotation=45
+        )  # Format bulan tahun
+        ax.set_xlabel("Tanggal")
+        ax.set_ylabel("Jumlah Peminjaman")
         ax.legend()
         ax.grid(True)
         st.pyplot(fig)
         # ax.show()
-    
+
     # st.write("""
     # Kesimpulan dari Time-Series Anomali.
     # - Peminjaman meningkat pada pertengahan tahun.
@@ -236,9 +327,7 @@ elif menu == "Outlier Analysis dan Kesimpulan":
     # - Anomali sangat terlihat pada peminjaman di akhir tahun 2012 yang diikuti dengan penurunan peminjaman yang sangat drastis.
     # - Anomali peminjam registered lebih tinggi dibandingkan dengan peminjam casual
     # """)
-    
 
-    
 
 st.sidebar.markdown("---")
 st.sidebar.write("Dibuat oleh Alya Fauzia Azizah")
