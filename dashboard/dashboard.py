@@ -21,7 +21,7 @@ menu = st.sidebar.selectbox(
         "Tren Peminjaman",
         "Hari Libur vs Hari Kerja",
         "Pengaruh Cuaca",
-        "Outlier Analysis dan Kesimpulan",
+        "Outlier Analysis",
     ],
 )
 
@@ -203,7 +203,7 @@ elif menu == "Pengaruh Cuaca":
         st.pyplot(fig)
 
 # ============== Handling Outlier =============
-elif menu == "Outlier Analysis dan Kesimpulan":
+elif menu == "Outlier Analysis":
     with content.container():
         st.title("📈 Time Series Data Anomali")
         fig, ax = plt.subplots(figsize=(12, 6))
