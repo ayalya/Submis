@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 # Load data
 # @st.cache_data
@@ -311,17 +312,16 @@ elif menu == "Outlier Analysis":
             s=50,
         )
         # plt.title('Tren Peminjaman Sepeda dan Anomali')
-        xticks = hour_data["dteday"].dt.to_period("M").drop_duplicates().dt.start_time
-        ax.set_xticks(xticks)
-        ax.set_xticklabels(
-            xticks.dt.strftime("%b %Y"), rotation=45
-        )  # Format bulan tahun
-        ax.set_xlabel("Tanggal")
-        ax.set_ylabel("Jumlah Peminjaman")
+        ax.xaxis.set_major_locator(mdates.MonthLocator())  
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))  # Format bulan (Jan 2021, Feb 2021, ...)
+
+        plt.xticks(rotation=45)  # Rotasi agar mudah dibaca
+        ax.set_xlabel('Tanggal')
+        ax.set_ylabel('Jumlah Peminjaman')
         ax.legend()
-        #ax.grid(True)
+        ax.grid(True, linestyle="--", alpha=0.6)  
+
         st.pyplot(fig)
-        # ax.show()
 
     # st.write("""
     # Kesimpulan dari Time-Series Anomali.
