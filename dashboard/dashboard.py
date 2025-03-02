@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # Load data
 # @st.cache_data
-<<<<<<< HEAD
+
 hour_data = pd.read_csv(
     "https://raw.githubusercontent.com/ayalya/Submis/refs/heads/main/dashboard/main_data.csv"
 )
