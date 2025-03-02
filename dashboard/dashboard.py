@@ -11,7 +11,7 @@ hour_data = pd.read_csv(
     "https://raw.githubusercontent.com/ayalya/Submis/refs/heads/main/dashboard/main_data.csv"
 )
 hour_data['dteday'] = pd.to_datetime(hour_data['dteday'], format="%Y-%m-%d")
-=======
+
 hour_data = pd.read_csv("https://raw.githubusercontent.com/ayalya/Submis/refs/heads/main/dashboard/main_data.csv")
 # hour_data = hour_data.drop(columns=['Unnamed: 0', "z_score", 'anomaly', 'instant'])
 
